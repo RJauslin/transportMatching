@@ -1,5 +1,5 @@
 rm(list = ls())
-# set.seed(6)
+set.seed(1)
 
 library(survey)
 library(StatMatch)
@@ -15,11 +15,11 @@ X <- mvrnorm(N,mu,Sigma)
 colnames(X) <- c("x1","x2")
 X <- as.data.frame(X)
 
-# Y <- data.frame(y1 = 3*X$x1^2 + 4*X$x2^2 + rnorm(N,0,1),y2 = exp(X$x1) + rnorm(N,0,0.1))
-# Z <- data.frame(z1 = 8*X$x1^2 - 3*X$x2^2 + rnorm(N,0,1),z2 = sqrt(abs(X$x2)) + rnorm(N,0,0.1))
+Y <- data.frame(y1 = X$x1^2 + X$x2^2 + rnorm(N,0,1),y2 = exp(X$x1) + rnorm(N,0,0.1))
+Z <- data.frame(z1 = log(abs(X$x1)) + rnorm(N,0,1),z2 = sqrt(abs(X$x2)) + rnorm(N,0,0.1))
 
-Y <- data.frame(y1 = 3*X$x1 + 4*X$x2 + rnorm(N,0,1),y2 = X$x1 + rnorm(N,0,0.1))
-Z <- data.frame(z1 = 8*X$x1 - 3*X$x2 + rnorm(N,0,1),z2 = abs(X$x2) + rnorm(N,0,0.1))
+# Y <- data.frame(y1 = 3*X$x1 + 4*X$x2 + rnorm(N,0,1),y2 = X$x1 + rnorm(N,0,0.1))
+# Z <- data.frame(z1 = 8*X$x1 - 3*X$x2 + rnorm(N,0,1),z2 = abs(X$x2) + rnorm(N,0,0.1))
 
 
 
@@ -99,9 +99,9 @@ cov(Y,Z,method = "pearson")
 ##############
 
 
-cst <- sum(w1)
-w1 <- w1/sum(w1)*cst
-w2 <- w2/sum(w2)*cst
+# cst <- sum(w1)
+# w1 <- w1/sum(w1)*cst
+# w2 <- w2/sum(w2)*cst
 object = linkage(X1,id1,X2,id2,w1,w2)
 # object <- statMatch_random(object)
 

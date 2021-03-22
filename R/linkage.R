@@ -38,25 +38,15 @@
 #' w1=re$w1
 #' w2=re$w2
 #' object = linkage(X1,id1,X2,id2,w1,w2)
-#' nlevels(factor(object$conc[,1]))
-#' nlevels(factor(id1))
-#' nlevels(factor(object$conc[,2]))
-#' nlevels(factor(id2))
-#' 
+
 #' round(colSums(object$conc$weight*object$conc[,4:ncol(object$conc)]),3)
 #' round(colSums(cbind(w1*X1,w2*X2)),3)
 #' 
-#' 
 linkage <- function(X1,id1,X2,id2,w1,w2,method = "Euclidean",EPS= 1e-9){
-  
-  
-  # to increase precision failed from calib function in harmonize : TODO check that
-  # w1 <- (w1/sum(w1))*N
-  # w2 <- (w2/sum(w2))*N
   
   # distance
   D <- proxy::dist(X1,X2,method = "Euclidean")
-  
+
   
   # to find units that are in intersection between the two sample
   inter <- base::intersect(id1,id2)
@@ -101,10 +91,8 @@ linkage <- function(X1,id1,X2,id2,w1,w2,method = "Euclidean",EPS= 1e-9){
   
   colnames(U)[4:ncol(U)] <- colnames(V)[4:ncol(V)]
   
-  
   conc <- rbind(V,U)
   conc <- conc[order(conc[,1]),]
-  
   
   out <- list(res = res,
              conc = conc)
@@ -112,11 +100,6 @@ linkage <- function(X1,id1,X2,id2,w1,w2,method = "Euclidean",EPS= 1e-9){
   
   return(out)
   
-  # E <- cbind(id1=id1[res[,1]],id2=id2[res[,2]],res[,3] , X1[ww1>EPS,][res[,1],] , X2[ww2>EPS,][res[,2],])
-  #
- 
-  #
-  # rbind(final,as.matrix(E))
 }
 
 
