@@ -6,22 +6,35 @@ rm(list = ls())
 numCores <- detectCores()
 numCores
 N <- 30000
-mu <- c(4,9)
-Sigma <- matrix(c(1,0.3,0.3,1),ncol = 2)
-Xm <- mvrnorm(N,mu,Sigma)
+mu <- c(4,9,20,30,100,200)
+
+
+tmp <- matrix(rnorm(36),nrow=6)
+Sigma <- tmp%*%t(tmp)
+
+# tmp <- c(1,0.3,0.4,0.5,0.6,0.7)
+# Sigma <- tmp%*%t(tmp)
+# diag(Sigma) <- rep(1,6)
+
+dat <- mvrnorm(N,mu,Sigma)
+Xm <- dat[,1:2]
 colnames(Xm) <- c("x1","x2")
 Xm <- as.data.frame(Xm)
 
-Y <- data.frame(y1 = Xm$x1^2  + rnorm(N,0,1),y2 = exp(Xm$x1^1/4) + rnorm(N,0,0.1))
-Z <- data.frame(z1 = (1/30)*Xm$x2^3 + rnorm(N,0,1),z2 = sqrt(abs(Xm$x2)) + rnorm(N,0,0.1))
-
-cov(cbind(Xm,Y,Z))
+Y <- dat[,3:4]
+colnames(Y) <- c("y1","y2")
+Y <- as.data.frame(Y)
+Z <- dat[,5:6]
+colnames(Z) <- c("z1","z2")
+Z <- as.data.frame(Z)
+# Y <- data.frame(y1 = Xm$x1^2  + rnorm(N,0,1),y2 = exp(Xm$x1) + rnorm(N,0,0.1))
+# Z <- data.frame(z1 = (1/30)*Xm$x2^3 + rnorm(N,0,1),z2 = sqrt(abs(Xm$x2)) + rnorm(N,0,0.1))
 
 # Y <- data.frame(y1 = 3*X$x1 + 4*X$x2 + rnorm(N,0,1),y2 = X$x1 + rnorm(N,0,0.1))
 # Z <- data.frame(z1 = 8*X$x1 - 3*X$x2 + rnorm(N,0,1),z2 = abs(X$x2) + rnorm(N,0,0.1))
 
 
-round(pcor(cbind(Xm,Y,Z))$estimate,4)
+# round(pcor(cbind(Xm,Y,Z))$estimate,4)
 
 n1=1000
 n2=3000
@@ -92,7 +105,7 @@ sim <- function(n,Xm,Y,Z,n1,n2){
                balanced = balanced,
                ren_1 = ren_1,
                ren_2 = ren_2
-               ))
+  ))
   
 }
 
@@ -109,13 +122,13 @@ clusterEvalQ(cl,{
 # call parLapply
 SIM = 100
 l_sim <- parLapply(cl = cl,
-          X = 1:SIM,
-          fun = sim,
-          Xm = Xm,
-          Y = Y,
-          Z = Z,
-          n1 = n1,
-          n2 = n2)
+                   X = 1:SIM,
+                   fun = sim,
+                   Xm = Xm,
+                   Y = Y,
+                   Z = Z,
+                   n1 = n1,
+                   n2 = n2)
 
 # close cluster
 stopCluster(cl)
@@ -168,11 +181,11 @@ for(i in 1:length(l_sim)){
 b_full^2 + var_full
 mse_full
 
-tab <- rbind(b_full^2,var_full,mse_full)
-tab <- cbind(tab, rbind(b_balanced^2,var_balanced,mse_balanced))
-tab <- cbind(tab, rbind(b_ren_1^2,var_ren_1,mse_ren_1))
+tabNOCIA <- rbind(b_full^2,var_full,mse_full)
+tabNOCIA <- cbind(tabNOCIA, rbind(b_balanced^2,var_balanced,mse_balanced))
+tabNOCIA <- cbind(tabNOCIA, rbind(b_ren_1^2,var_ren_1,mse_ren_1))
 # tab <- cbind(tab, rbind(b_ren_2^2,var_ren_2,mse_ren_2))
 
 
-saveRDS(tab,file = "C:/Users/jauslinr/switchdrive/matching_optimal_transport/paper/tab.rds")
+saveRDS(tabNOCIA,file = "C:/Users/jauslinr/switchdrive/matching_optimal_transport/paper/tabNOCIA.rds")
 

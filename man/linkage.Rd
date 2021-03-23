@@ -55,13 +55,7 @@ re=harmonize(X1,d1,id1,X2,d2,id2)
 w1=re$w1
 w2=re$w2
 object = linkage(X1,id1,X2,id2,w1,w2)
-nlevels(factor(object$conc[,1]))
-nlevels(factor(id1))
-nlevels(factor(object$conc[,2]))
-nlevels(factor(id2))
-
 round(colSums(object$conc$weight*object$conc[,4:ncol(object$conc)]),3)
 round(colSums(cbind(w1*X1,w2*X2)),3)
-
 
 }
