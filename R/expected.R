@@ -31,7 +31,7 @@
 #' w1=re$w1
 #' w2=re$w2
 #' object = linkage(X1,id1,X2,id2,w1,w2)
-#' out <- statMatch_expected(object)
+#' out <- statMatch_expected(object,Z)
 #' 
 #' round(colSums(object$conc$weight*object$conc[,4:ncol(object$conc)]),3)
 #' round(colSums(cbind(w1*X1,w2*X2)),3)
@@ -45,7 +45,6 @@ statMatch_expected <- function(object,Z){
   
   q_l <- split(object$conc$weight,f =object$conc$id1)
   q <- as.numeric(do.call(c,lapply(q_l, function(x){x/sum(x)})))
-  
   
   
   out <- object

@@ -54,7 +54,6 @@ harmonize <- function(X1,d1,id1,X2,d2,id2,totals)
   XX1=cbind(rep(1,n1),X1)
   XX2=cbind(rep(1,n2),X2)
   
-  
   # we can specify the desired total (for example if we know the totals of the population)
   if(missing(totals)){
     n12=length(intersect(id1,id2))
@@ -63,9 +62,12 @@ harmonize <- function(X1,d1,id1,X2,d2,id2,totals)
   }
 
   # calibration with sampling package
-  w1=d1*calibRaking(as.matrix(XX1),d1,totals,q = rep(1,length(d1)))
-  w2=d2*calibRaking(as.matrix(XX2),d2,totals,q = rep(1,length(d2)))
+  w1=d1*calibR(as.matrix(XX1),d1,totals,q = rep(1,length(d1)))
+  w2=d2*calibR(as.matrix(XX2),d2,totals,q = rep(1,length(d2)))
   
+  # w1=d1*calibRaking(as.matrix(XX1),d1,totals,q = rep(1,length(d1)))
+  # w2=d2*calibRaking(as.matrix(XX2),d2,totals,q = rep(1,length(d2)))
+
   return(list(w1=w1,w2=w2))
 }
 

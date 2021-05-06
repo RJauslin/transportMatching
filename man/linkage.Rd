@@ -2,9 +2,19 @@
 % Please edit documentation in R/linkage.R
 \name{linkage}
 \alias{linkage}
-\title{Title}
+\title{Statistical Matching using Optimal transport}
 \usage{
-linkage(X1, id1, X2, id2, w1, w2, method = "Euclidean", EPS = 1e-09)
+linkage(
+  X1,
+  id1,
+  X2,
+  id2,
+  w1,
+  w2,
+  dist_method = "Euclidean",
+  transport_method = "shortsimplex",
+  EPS = 1e-09
+)
 }
 \arguments{
 \item{X1}{}
@@ -19,15 +29,17 @@ linkage(X1, id1, X2, id2, w1, w2, method = "Euclidean", EPS = 1e-09)
 
 \item{w2}{}
 
-\item{EPS}{}
+\item{dist_method}{}
 
-\item{CST}{}
+\item{transport_method}{}
+
+\item{EPS}{}
 }
 \value{
 
 }
 \description{
-Title
+Statistical Matching using Optimal transport
 }
 \examples{
 rm(list = ls())
@@ -57,5 +69,4 @@ w2=re$w2
 object = linkage(X1,id1,X2,id2,w1,w2)
 round(colSums(object$conc$weight*object$conc[,4:ncol(object$conc)]),3)
 round(colSums(cbind(w1*X1,w2*X2)),3)
-
 }

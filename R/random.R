@@ -81,7 +81,6 @@ statMatch_random <- function(object,EPS = 1e-8,Z2){
   out$q <- q[ss == 1]
   return(out)
   
-  
 }
 
 

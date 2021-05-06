@@ -1,4 +1,4 @@
-#' Title
+#' Statistical Matching using Optimal transport
 #'
 #' @param X1 
 #' @param id1 
@@ -6,8 +6,9 @@
 #' @param id2 
 #' @param w1 
 #' @param w2 
+#' @param dist_method 
+#' @param transport_method 
 #' @param EPS 
-#' @param CST 
 #'
 #' @return
 #' @export
@@ -38,15 +39,20 @@
 #' w1=re$w1
 #' w2=re$w2
 #' object = linkage(X1,id1,X2,id2,w1,w2)
-
 #' round(colSums(object$conc$weight*object$conc[,4:ncol(object$conc)]),3)
 #' round(colSums(cbind(w1*X1,w2*X2)),3)
-#' 
-linkage <- function(X1,id1,X2,id2,w1,w2,method = "Euclidean",EPS= 1e-9){
+linkage <- function(X1,
+                    id1,
+                    X2,
+                    id2,
+                    w1,
+                    w2,
+                    dist_method = "Euclidean",
+                    transport_method = "shortsimplex",
+                    EPS= 1e-9){
   
   # distance
-  D <- proxy::dist(X1,X2,method = "Euclidean")
-
+  D <- proxy::dist(X1,X2,method = dist_method)
   
   # to find units that are in intersection between the two sample
   inter <- base::intersect(id1,id2)
@@ -70,18 +76,32 @@ linkage <- function(X1,id1,X2,id2,w1,w2,method = "Euclidean",EPS= 1e-9){
   id1_tmp <- id1[w01]
   id2_tmp <- id2[w02]
   
-  # keep weights greter than 0
+  # keep weights larger than 0
   www1 <- ww1[w01]
   www2 <- ww2[w02]
   
   # adapt distance to optimal transport
-  DD <-D[w01,w02]
+  DD <- D[w01,w02]
   
   # optimal transport
-  res <- transport::transport(www1,www2,DD)
+  cat("begin transport : \n\n");start_time <- Sys.time()
+  # require(lpSolve)
+  # lp.transport(DD, "min", row.signs = rep ("==", length(www1)),
+  #              row.rhs = www1,
+  #              col.signs= rep ("==", length(www2)),
+  #              col.rhs = www2,
+  #              integers = NULL)
+  res <- transport::transport.default(www1,www2,DD,method = transport_method)
+  end_time <- Sys.time()
+  cat("end transport : TIME : ", end_time - start_time,"\n\n")
   
-  # 
-  U <- cbind(id1 = id1_tmp[res[,1]],id2 = id2_tmp[res[,2]],weight = res[,3] , X1[w01,][res[,1],] , X2[w02,][res[,2],])
+  
+   
+  U <- cbind(id1 = id1_tmp[res[,1]],
+             id2 = id2_tmp[res[,2]],
+             weight = res[,3] ,
+             X1[w01,][res[,1],],
+             X2[w02,][res[,2],])
   
   # for common unit 
   D1 <- data.frame(w1,id1,X1 = X1)
