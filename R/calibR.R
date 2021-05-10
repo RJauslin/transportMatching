@@ -1,13 +1,13 @@
-#' Calibration by using raking ratio
+#' @title  Calibration by using raking ratio
+#'
 #'
 #' @param Xs 
 #' @param d 
 #' @param total 
 #' @param q 
 #' @param max_iter 
-#'
-#' @return
-#' @export
+#' 
+#' @return Return the g-weights.
 #'
 #' @examples
 calibR <- function (Xs, d, total, q = rep(1, length(d)), max_iter = 500) {

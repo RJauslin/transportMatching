@@ -2,7 +2,7 @@
 % Please edit documentation in R/calibR.R
 \name{calibR}
 \alias{calibR}
-\title{Title}
+\title{Calibration by using raking ratio}
 \usage{
 calibR(Xs, d, total, q = rep(1, length(d)), max_iter = 500)
 }
@@ -18,8 +18,8 @@ calibR(Xs, d, total, q = rep(1, length(d)), max_iter = 500)
 \item{max_iter}{}
 }
 \value{
-
+Return the g-weights.
 }
 \description{
-Title
+Calibration by using raking ratio
 }

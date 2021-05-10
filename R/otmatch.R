@@ -1,27 +1,32 @@
-#' Statistical Matching using Optimal transport
+#' @title Statistical Matching using Optimal transport
 #'
-#' @param X1 
-#' @param id1 
-#' @param X2 
-#' @param id2 
-#' @param w1 
-#' @param w2 
-#' @param dist_method 
-#' @param transport_method 
-#' @param EPS 
+#' @description 
+#' 
+#' This function computes the statistical matching between two complex survey samples with weighting schemes. The function uses the function \code{\link[transport:transport]{transport}} of the package \code{transport}.
+#'  
+#' @param X1 A matrix, the matching variables of sample 1.
+#' @param id1 A character or numeric vector that contains the labels of the units in sample 1.
+#' @param X2 A matrix, the matching variables of sample 2.
+#' @param id2 A character or numeric vector that contains the labels of the units in sample 1.
+#' @param w1 A numeric vector that contains the weights of the sample 1, harmonized by the function \code{\link{harmonize}}.
+#' @param w2 A numeric vector that contains the weights of the sample 2, harmonized by the function \code{\link{harmonize}}.
+#' @param dist_method A string that specified the  distance used by the function \code{\link[proxy:dist]{dist}} of the package \code{proxy}. Default \code{Euclidean}.
+#' @param transport_method A string that specified the  distance used by the function \code{\link[transport:transport]{transport}} of the package \code{transport}. Default \code{"shortsimplex"}.
 #'
-#' @return
+#' @return A data.frame that contains the matching. The first two columns contain the unit identities of the two samples. The third column is the final weight. All remaining columns are the matching variables.
 #' @export
 #'
 #' @examples
-#' rm(list = ls())
-#' N=10000
+#' 
+#' #--- SET UP
+#' N=1000
 #' p=5
 #' X=array(rnorm(N*p),c(N,p))
 #' EPS= 1e-9
 #' 
-#' n1=1000
-#' n2=1000
+#' n1=100
+#' n2=200
+#' 
 #' s1=srswor(n1,N)
 #' s2=srswor(n2,N)
 #' 
@@ -35,13 +40,21 @@
 #' X1=X[s1==1,]
 #' X2=X[s2==1,]
 #' 
+#' #--- HARMONIZATION
+#' 
 #' re=harmonize(X1,d1,id1,X2,d2,id2)
 #' w1=re$w1
 #' w2=re$w2
-#' object = linkage(X1,id1,X2,id2,w1,w2)
-#' round(colSums(object$conc$weight*object$conc[,4:ncol(object$conc)]),3)
-#' round(colSums(cbind(w1*X1,w2*X2)),3)
-linkage <- function(X1,
+#' 
+#' #--- STATISTICAL MATCHING WITH OT
+#' 
+#' object = otmatch(X1,id1,X2,id2,w1,w2)
+#' 
+#' 
+#' round(colSums(object$weight*object[,4:ncol(object)]),3)
+#' round(colSums(w1*X1),3)
+#' round(colSums(w2*X2),3)
+otmatch <- function(X1,
                     id1,
                     X2,
                     id2,
@@ -49,7 +62,7 @@ linkage <- function(X1,
                     w2,
                     dist_method = "Euclidean",
                     transport_method = "shortsimplex",
-                    EPS= 1e-9){
+                    EPS = 1e-9){
   
   # distance
   D <- proxy::dist(X1,X2,method = dist_method)
@@ -84,19 +97,18 @@ linkage <- function(X1,
   DD <- D[w01,w02]
   
   # optimal transport
-  cat("begin transport : \n\n");start_time <- Sys.time()
+  # cat("begin transport : \n\n");start_time <- Sys.time()
   # require(lpSolve)
   # lp.transport(DD, "min", row.signs = rep ("==", length(www1)),
   #              row.rhs = www1,
   #              col.signs= rep ("==", length(www2)),
   #              col.rhs = www2,
   #              integers = NULL)
+  
   res <- transport::transport.default(www1,www2,DD,method = transport_method)
-  end_time <- Sys.time()
-  cat("end transport : TIME : ", end_time - start_time,"\n\n")
+  # end_time <- Sys.time()
+  # cat("end transport : TIME : ", end_time - start_time,"\n\n")
   
-  
-   
   U <- cbind(id1 = id1_tmp[res[,1]],
              id2 = id2_tmp[res[,2]],
              weight = res[,3] ,
@@ -114,9 +126,8 @@ linkage <- function(X1,
   conc <- rbind(V,U)
   conc <- conc[order(conc[,1]),]
   
-  out <- list(res = res,
-             conc = conc)
-  class(out) <- "match"
+  out <- conc
+  # class(out) <- "match"
   
   return(out)
   
